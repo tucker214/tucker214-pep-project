@@ -19,7 +19,7 @@ public class SocialMediaController {
     AccountService accountService;
     MessageService messageService;
 
-    SocialMediaController()
+    public SocialMediaController()
     {
         accountService = new AccountService();
         messageService = new MessageService();
@@ -34,7 +34,7 @@ public class SocialMediaController {
         Javalin app = Javalin.create();
         app.get("example-endpoint", this::exampleHandler);
         app.post("/register", this::postAccountHandler);
-
+        
         return app;
     }
 
@@ -60,7 +60,10 @@ public class SocialMediaController {
             context.status(400);
         }
         else 
-            context.status(200);
+            {
+                context.status(200);
+                context.json(mapper.writeValueAsString(registeredAccount));
+            }
     }
 
 

@@ -11,7 +11,7 @@ public class AccountDAO
 {
     
     //#1 Process new user registrations
-    public Account insertAccount(Account account)
+    public Account addAccount(Account account)
     {
         Connection connection = Util.ConnectionUtil.getConnection();
         try
@@ -39,6 +39,29 @@ public class AccountDAO
         }
 
         return null;
+    }
+
+    public String getAccountUsernameById(Account account)
+    {
+        Connection connection = Util.ConnectionUtil.getConnection();
+        String accountName = null;
+        try {
+
+            String sql = "SELECT * FROM account WHERE account.account_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, account.getAccount_id());
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next())
+            {
+                accountName = new String(resultSet.getString("username"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return accountName;
     }
     
 }
