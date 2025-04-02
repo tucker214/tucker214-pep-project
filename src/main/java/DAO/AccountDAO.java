@@ -14,25 +14,23 @@ public class AccountDAO
     public Account addAccount(Account account)
     {
         Connection connection = Util.ConnectionUtil.getConnection();
-
-        // if (doesUsernameExist(account.getUsername()))
-        //     return null;
         try
         {
-            String sql = "INSERT INTO (account_id, username, password) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO account (username, password) VALUES (?, ?)"; // WHERE ? NOT IN (SELECT username FROM account)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            preparedStatement.setInt(1, account.getAccount_id());
-            preparedStatement.setString(2, account.getUsername());
-            preparedStatement.setString(3, account.getPassword());
+            //preparedStatement.setInt(1, account.getAccount_id());
+            preparedStatement.setString(1, account.getUsername());
+            preparedStatement.setString(2, account.getPassword());
+            //preparedStatement.setString(3, account.getUsername());
 
             preparedStatement.executeUpdate();
             
-            ResultSet pkeyResultSet = preparedStatement.getGeneratedKeys();
+            ResultSet keyResultSet = preparedStatement.getGeneratedKeys();
 
-            if(pkeyResultSet.next())
+            if(keyResultSet.next())
             {
-                int account_id = (int) pkeyResultSet.getLong(1);
+                int account_id = (int)keyResultSet.getLong(1);
                 return new Account(account_id, account.getUsername(), account.getPassword());
             }
 
@@ -70,28 +68,27 @@ public class AccountDAO
     public Account loginAccount(String username, String password)
     {
         Connection connection = Util.ConnectionUtil.getConnection();
-        Account temp = null;
         try {
-            String sql = "SELECT * FROM account WHERE account.username = ?, account.password = ?";
+            String sql = "SELECT * FROM account WHERE username = ? AND password = ?";
             
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, username);
             preparedStatement.setString(2, password);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            while(resultSet.next())
+            if(resultSet.next())
             {
                if (resultSet.getString("username").equals(username) && resultSet.getString("password").equals(password))
                 {
-                    temp = new Account(username, password);
-                    temp.setAccount_id(resultSet.getInt("account_id"));
+                    int account_id = resultSet.getInt(1);
+                    return new Account(account_id, username, password);
                 }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
-        return temp;
+        return null;
     }
 
     public boolean doesUsernameExist(String username)
@@ -99,14 +96,14 @@ public class AccountDAO
         Connection connection = Util.ConnectionUtil.getConnection();
         String temp = null;
         try {
-            String sql = "SELECT * FROM account WHERE account.username = ?";
+            String sql = "SELECT username FROM account WHERE username = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            while(resultSet.next())
+            if(resultSet.next())
             {
-                temp = resultSet.getString("username");
+                temp = resultSet.getString(2);
             }
 
         } catch (Exception e) {

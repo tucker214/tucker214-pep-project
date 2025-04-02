@@ -30,4 +30,9 @@ public class AccountService {
 
         return this.accountDAO.loginAccount(username, password);
     }
+
+    public boolean doesUsernameExist(String username)
+    {
+        return accountDAO.doesUsernameExist(username);
+    }
 }
