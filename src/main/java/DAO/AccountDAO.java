@@ -14,6 +14,9 @@ public class AccountDAO
     public Account addAccount(Account account)
     {
         Connection connection = Util.ConnectionUtil.getConnection();
+
+        if (doesUsernameExist(account.getUsername()))
+            return null;
         try
         {
             String sql = "INSERT INTO (account_id, username, password) VALUES (?, ?, ?)";
@@ -67,7 +70,7 @@ public class AccountDAO
     public Account loginAccount(String username, String password)
     {
         Connection connection = Util.ConnectionUtil.getConnection();
-
+        Account temp = null;
         try {
             String sql = "SELECT * FROM account WHERE account.username = ?, account.password = ?";
             
@@ -80,16 +83,41 @@ public class AccountDAO
             {
                if (resultSet.getString("username").equals(username) && resultSet.getString("password").equals(password))
                 {
-                    Account temp = new Account(username, password);
+                    temp = new Account(username, password);
                     temp.setAccount_id(resultSet.getInt("account_id"));
-                    return temp;
                 }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
-        return null;
+        return temp;
+    }
+
+    public boolean doesUsernameExist(String username)
+    {
+        Connection connection = Util.ConnectionUtil.getConnection();
+        String temp = null;
+        try {
+            String sql = "SELECT * FROM account WHERE account.username = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, username);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next())
+            {
+                temp = resultSet.getString("username");
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        if (temp.equals(username))
+            return true;
+        else
+            return false;
     }
     
+
 }
