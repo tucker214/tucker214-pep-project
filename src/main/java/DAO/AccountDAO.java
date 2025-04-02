@@ -15,16 +15,16 @@ public class AccountDAO
     {
         Connection connection = Util.ConnectionUtil.getConnection();
 
-        if (doesUsernameExist(account.getUsername()))
-            return null;
+        // if (doesUsernameExist(account.getUsername()))
+        //     return null;
         try
         {
             String sql = "INSERT INTO (account_id, username, password) VALUES (?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             preparedStatement.setInt(1, account.getAccount_id());
-            preparedStatement.setString(1, account.getUsername());
-            preparedStatement.setString(1, account.getPassword());
+            preparedStatement.setString(2, account.getUsername());
+            preparedStatement.setString(3, account.getPassword());
 
             preparedStatement.executeUpdate();
             
