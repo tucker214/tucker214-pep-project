@@ -63,5 +63,33 @@ public class AccountDAO
 
         return accountName;
     }
+
+    public Account loginAccount(String username, String password)
+    {
+        Connection connection = Util.ConnectionUtil.getConnection();
+
+        try {
+            String sql = "SELECT * FROM account WHERE account.username = ?, account.password = ?";
+            
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, password);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next())
+            {
+               if (resultSet.getString("username").equals(username) && resultSet.getString("password").equals(password))
+                {
+                    Account temp = new Account(username, password);
+                    temp.setAccount_id(resultSet.getInt("account_id"));
+                    return temp;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
     
 }

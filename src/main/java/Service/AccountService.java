@@ -24,4 +24,10 @@ public class AccountService {
     {
         return null;
     }
+
+    public Account loginAccount(String username, String password)
+    {
+
+        return this.accountDAO.loginAccount(username, password);
+    }
 }
