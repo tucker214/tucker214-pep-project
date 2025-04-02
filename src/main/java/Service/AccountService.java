@@ -22,7 +22,7 @@ public class AccountService {
 
     public String getAccountUsernameById(int account_id)
     {
-        return null;
+        return accountDAO.getAccountUsernameById(account_id);
     }
 
     public Account loginAccount(String username, String password)

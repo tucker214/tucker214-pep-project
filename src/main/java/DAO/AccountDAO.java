@@ -41,7 +41,7 @@ public class AccountDAO
         return null;
     }
 
-    public String getAccountUsernameById(Account account)
+    public String getAccountUsernameById(int account_id)
     {
         Connection connection = Util.ConnectionUtil.getConnection();
         String accountName = null;
@@ -50,7 +50,7 @@ public class AccountDAO
             String sql = "SELECT * FROM account WHERE account.account_id = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
-            preparedStatement.setInt(1, account.getAccount_id());
+            preparedStatement.setInt(1, account_id);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while(resultSet.next())
