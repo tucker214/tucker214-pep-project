@@ -8,6 +8,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import Model.Account;
 import Model.Message;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller. The endpoints you will need can be
@@ -39,6 +41,8 @@ public class SocialMediaController {
         app.get("/messages", this::getMessagesHandler);
         app.get("/messages/{message_id}", this::getMessageByIdHandler);
         app.delete("/messages/{message_id}", this::deleteMessageByIdHandler);
+        app.patch("/messages/{message_id}", this::updateMessageByIdHandler);
+        app.get("/accounts/{account_id}/messages", this::getAllMessagesByUserId);
         return app;
     }
 
@@ -142,6 +146,38 @@ public class SocialMediaController {
         if (message != null)
             if (!message.getMessage_text().isEmpty())
                 context.json(mapper.writeValueAsString(message));
+
+    }
+
+    public void updateMessageByIdHandler(Context context) throws JsonProcessingException
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        int message_id = Integer.parseInt(context.pathParam("message_id"));
+        Message new_message = mapper.readValue(context.body(), Message.class);
+        messageService.updateMessageById(message_id, new_message.message_text);
+        Message updatedMessage = messageService.getMessageById(message_id);
+       
+        if (updatedMessage == null)
+            context.status(400);
+        else if (new_message.message_text.isEmpty())
+            context.status(400);
+        else if (new_message.message_text.length() > 255)
+            context.status(400);
+        else
+        {
+            context.status(200);
+            context.json(mapper.writeValueAsString(updatedMessage));
+        }
+    }
+
+    public void getAllMessagesByUserId(Context context) throws JsonProcessingException
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        int account_id = Integer.parseInt(context.pathParam("account_id"));
+        List<Message> message_list = new ArrayList<>();
+        message_list = messageService.getAllMessagesByUserId(account_id);
+        context.status(200);
+        context.json(mapper.writeValueAsString(message_list));
 
     }
 }

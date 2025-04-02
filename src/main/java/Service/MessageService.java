@@ -11,7 +11,7 @@ public class MessageService {
 
     public MessageService()
     {
-        messageDAO = new MessageDAO();
+        this.messageDAO = new MessageDAO();
     }
 
     public MessageService(MessageDAO messageDAO)
@@ -31,11 +31,21 @@ public class MessageService {
 
     public Message getMessageById(int message_id)
     {
-        return messageDAO.getMessageById(message_id);
+        return this.messageDAO.getMessageById(message_id);
     }
 
     public void deleteMessageById(int message_id)
     {
-        messageDAO.deleteMessageById(message_id);
+        this.messageDAO.deleteMessageById(message_id);
+    }
+
+    public void updateMessageById(int message_id, String message_text)
+    {
+        this.messageDAO.updateMessageById(message_id, message_text);
+    }
+
+    public List<Message> getAllMessagesByUserId(int account_id)
+    {
+        return this.messageDAO.getAllMessagesByUserId(account_id);
     }
 }

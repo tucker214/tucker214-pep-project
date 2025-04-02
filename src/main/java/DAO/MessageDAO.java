@@ -72,7 +72,7 @@ public class MessageDAO
                 resultSet.getString("message_text"), resultSet.getLong("time_posted_epoch"));
             }
         } catch (SQLException e) {
-            // TODO: handle exception
+            e.getMessage();
         }
 
         return null;
@@ -90,5 +90,44 @@ public class MessageDAO
         } catch (SQLException e) {
             e.getMessage();
         }
+    }
+
+    public void updateMessageById(int message_id, String message_text)
+    {
+        Connection connection = Util.ConnectionUtil.getConnection();
+        try {
+            String sql = "UPDATE message SET message_text = ? WHERE message_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, message_text);
+            preparedStatement.setInt(2, message_id);
+            preparedStatement.executeUpdate();
+            
+        } catch (SQLException e) {
+            e.getMessage();
+        }
+    }
+
+    public List<Message> getAllMessagesByUserId(int account_id)
+    {
+        Connection connection = Util.ConnectionUtil.getConnection();
+        List<Message> messages = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM message WHERE message_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, account_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next())
+            {
+                Message message = new Message(resultSet.getInt("message_id"), resultSet.getInt("posted_by"), 
+                resultSet.getString("message_text"), resultSet.getLong("time_posted_epoch"));
+                messages.add(message);
+            }
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return messages;
+
     }
 }
